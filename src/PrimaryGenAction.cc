@@ -2,36 +2,14 @@
 #include "G4ParticleTable.hh"
 #include "G4SystemOfUnits.hh"
 #include "G4GeneralParticleSource.hh"
-#include "Randomize.hh" // Include for random number generation
 
-namespace docker_g4 {
-
+// For starters, we shoot a geantino (interactionless test particle) with one MeV of energy from the origin
 PrimaryGenAction::PrimaryGenAction(){
-  G4double particleEnergy = 2000 * keV;
-  G4ThreeVector particlePosition = G4ThreeVector(0.1 * m, 0.1 * m, 0.1 * m);
-
+  G4double particleEnergy = 1000 * keV;
+  G4ThreeVector particlePosition = G4ThreeVector(0.0 * m, 0.0 * m, 0.0 * m);
   fParticleGun = new G4GeneralParticleSource();
-  fParticleGun->SetParticleDefinition(G4ParticleTable::GetParticleTable()->FindParticle("gamma")); 
-
+  fParticleGun->SetParticleDefinition(G4ParticleTable::GetParticleTable()->FindParticle("geantino")); 
   auto energyDist = fParticleGun->GetCurrentSource()->GetEneDist();
   energyDist->SetMonoEnergy(particleEnergy);
-
   fParticleGun->SetParticlePosition(particlePosition);
-}
-
-void PrimaryGenAction::GeneratePrimaries(G4Event* anEvent){
-  G4double theta = CLHEP::pi * G4UniformRand(); // Random angle theta
-  G4double phi = 2 * CLHEP::pi * G4UniformRand(); // Random angle phi
-
-  G4ThreeVector randomDirection(std::sin(theta) * std::cos(phi),
-                                std::sin(theta) * std::sin(phi),
-                                std::cos(theta));
-
-  auto angDist = fParticleGun->GetCurrentSource()->GetAngDist();
-  angDist->SetParticleMomentumDirection(randomDirection);
-
-  G4cout << "PRIMARY SHOT: Direction: " << randomDirection << G4endl;
-  fParticleGun->GeneratePrimaryVertex(anEvent);
-}
-
 }
